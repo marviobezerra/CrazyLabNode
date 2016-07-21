@@ -39,4 +39,4 @@ class Server{
 }
 
 var server = Server.bootstrap();
-export = server.app;
+export default server.app;
