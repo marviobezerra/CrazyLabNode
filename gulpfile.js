@@ -126,7 +126,7 @@ gulp.task(helper.tasks.watch.server, function (done) {
 
   var firedDone = false;
 
-  webpack(helper.webpack.server).watch(100, function (err, stats) {
+  webpack(helper.webpack.config(helper.webpack.server, true, false, false)).watch(100, function (err, stats) {
     if (!firedDone) {
       firedDone = true;
       done();
@@ -145,6 +145,7 @@ gulp.task(helper.tasks.run, [helper.tasks.watch.server, helper.tasks.watch.clien
     script: path.join(__dirname, ".bin"),
     ignore: ["*"],
     watch: ["foo/"],
+    nodeArgs: ['--debug'],
     ext: "noop"
   }).on("restart", function () {
     console.log("Patched!");
