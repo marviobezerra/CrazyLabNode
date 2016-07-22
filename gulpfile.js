@@ -1,197 +1,74 @@
 var gulp = require("gulp"),
-	webpack = require("webpack"),
-    path = require("path");
     fs = require("fs"),
-	DeepMerge = require("deep-merge"),
+    path = require("path"),
     nodemon = require("nodemon"),
-    WebpackDevServer = require("webpack-dev-server"),
-    ExtractTextPlugin = require("extract-text-webpack-plugin");
+    DeepMerge = require("deep-merge"),
+    htmlmin = require('gulp-htmlmin'),
+    webpack = require("webpack"),    
+    WebpackDevServer = require("webpack-dev-server");
 
-var deepmerge = DeepMerge(function(target, source, key) {
-  if(target instanceof Array) {
-    return [].concat(target, source);
-  }
-  return source;
-});
-//Test
-// Generic
-var defaultConfig = {    
-    module: {
-        loaders: [
-            {
-				test: /\.ts$/,
-				exclude: /node_modules/,
-				loader: "ts-loader"
-			},
-			{
-				test: /\.js$/,
-				exclude: /node_modules/,
-				loader: "strip-sourcemap"
-			}
-		]
-  }
+var helper = {  
+  merge : DeepMerge(function(target, source, key) {
+    if(target instanceof Array) {
+      return [].concat(target, source);
+    }
+    
+    return source;
+  }),
+  onBuild : function(done) {
+    return function(err, stats) {
+      if(err) {
+        console.log("Error", err);
+      }
+      else {
+        console.log(stats.toString());
+      }
+      
+      if(done) {
+        done();
+      }
+    }
+  },
+  htmlMimify: {
+		collapseWhitespace: true,
+		removeComments: true,
+		removeTagWhitespace: false,
+		removeRedundantAttributes: true,
+		caseSensitive: true
+	},
+  path: {
+    source: {
+      html: "./Client/App/**/*.html"
+    },
+    destination: {
+      html: "./.bin/public"
+    }
+  },
+  tasks: {
+    run: "run",
+    clear: "clear",   
+    build: {
+      copy: "build:client:copy",
+      client: "build:client",
+      server: "build:server",
+    }
+  },
 };
 
-if(process.env.NODE_ENV !== "production") {
-    defaultConfig.devtool = "source-map";
-    defaultConfig.debug = true;
-}
-
-function config(overrides) {
-    return deepmerge(defaultConfig, overrides || {});
-}
-
-var frontendConfig = config({
-	entry: [
-        "webpack-dev-server/client?http://localhost:3000",
-        "webpack/hot/only-dev-server",
-		"./Client/App/Main.ts"
-	],
-	output: {
-        path: path.join(__dirname, "build", "client"),        
-		filename: "index.js",
-        publicPath: 'http://localhost:3000/build'
-	},
-	plugins: [
-		new ExtractTextPlugin("index.css"),
-        new webpack.HotModuleReplacementPlugin({ quiet: true })
-	],
-	resolve: {
-		extensions: ["", ".js", ".ts", ".scss", ".css"]
-	},
-
-	module: {
-		loaders: [
-			{
-				test: /\.css$/,
-				exclude: /node_modules/,
-				loader: ExtractTextPlugin.extract("style-loader", "css-loader")
-			},
-            {
-                test: /\App.Theme.scss$/,
-                exclude: /node_modules/,
-                loader: ExtractTextPlugin.extract("style-loader", "css-loader!sass-loader")
-            },
-			{
-			    exclude: /Styles/,
-			    test: /\.scss$/,
-			    loaders: ["raw-loader", "sass-loader?sourceMap"]
-			},
-			{
-				test: /\.ts$/,
-				loader: "ts-loader"
-			},
-			{
-				test: /\.js$/,
-				loader: "strip-sourcemap"
-			}
-		],
-		noParse: [/angular2\/bundles\/.+/]
-	}
+gulp.task(helper.tasks.build.server, function(done) {
+	var config = require("./Server/webpack.config.js");
+	webpack(config).run(helper.onBuild(done));
 });
 
-// Server
-var nodeModules = fs
-    .readdirSync("node_modules")
-    .filter(function(x) {
-        return [".bin"].indexOf(x) === -1;
-    });
-
-var backendConfig = config({
-	resolve: {
-		extensions: ["", ".js", ".ts"]
-	},
-    entry: [
-        "webpack/hot/signal.js",
-        "./Server/App/Main.ts"
-    ],
-    target: "node",
-    output: {
-        path: path.join(__dirname, "build", "server"),
-        filename: "index.js"
-    },
-    node: {
-        __dirname: true,
-        __filename: true
-    },
-    externals: [
-        function(context, request, callback) {
-            var pathStart = request.split("/")[0];
-            if (nodeModules.indexOf(pathStart) >= 0 && request != "webpack/hot/signal.js") {
-                return callback(null, "commonjs " + request);
-            };
-            
-            callback();
-        }
-    ],
-    recordsPath: path.join(__dirname, "build/_records"),
-    plugins: [
-        new webpack.IgnorePlugin(/\.(css|less|scss)$/),
-        new webpack.HotModuleReplacementPlugin({ quiet: true })
-    ]
+gulp.task(helper.tasks.build.client, function(done) {
+	var config = require("./Client/webpack.config.js");
+	webpack(config).run(helper.onBuild(done));
 });
 
-// Tasks
-function onBuild(done) {
-    return function(err, stats) {
-        if(err) {
-            console.log("Error", err);
-        } else {
-            console.log(stats.toString());
-        }
-        
-        if(done) {
-            done();
-        }
-    }
-}
-
-gulp.task("frontend-build", function(done) {
-    webpack(frontendConfig).run(onBuild(done));
+gulp.task(helper.tasks.build.copy, function () {
+	gulp.src([helper.path.source.html])
+		.pipe(htmlmin(helper.htmlMimify))
+		.pipe(gulp.dest(helper.path.destination.html));
 });
 
-gulp.task("frontend-watch", function() {
-    new WebpackDevServer(webpack(frontendConfig), {
-        publicPath: frontendConfig.output.publicPath,
-        hot: true
-    }).listen(3000, "localhost", function (err, result) {
-        if(err) {
-            console.log(err);
-        } else {
-            console.log("webpack dev server listening at localhost:3000");
-        }
-    });    
-});
-
-gulp.task("backend-build", function(done) {
-    webpack(backendConfig).run(onBuild(done));
-});
-
-gulp.task("backend-watch", function(done) {
-    var firedDone = false;
-    webpack(backendConfig).watch(100, function(err, stats) {
-        if(!firedDone) {
-            firedDone = true;
-            done();
-        }
-        
-        nodemon.restart();
-    });
-});
-
-gulp.task("build", ["frontend-build", "backend-build"]);
-gulp.task("watch", ["frontend-watch", "backend-watch"]);
-
-gulp.task("run", ["backend-watch", "frontend-watch"], function() {
-    nodemon({
-        execMap: {
-            js: "node"
-        },
-        script: path.join(__dirname, "build/server/index"),
-        ignore: ["*"],
-        watch: ["foo/"],
-        ext: "noop"
-    }).on("restart", function() {
-        console.log("Patched!");
-    });
-});
+gulp.task(helper.tasks.run, [helper.tasks.build.server, helper.tasks.build.client, helper.tasks.build.copy]);

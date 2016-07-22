@@ -1,42 +1,38 @@
-import * as bodyParser from "body-parser";
 import * as express from "express";
 import * as path from "path";
 
-import { IndexController } from "./Routes/Index";
-import { PersonApi } from "./Routes/Api";
-
-class Server{
+export class Server {
+    public App : express.Application;
+    public AppPublicPath: string = "./.bin/public/";
 
     constructor(){
-        this.app = express();
+        this.App = express();
         this.Config();
         this.Routes();
     }
 
-    public static bootstrap(): Server {
-        return new Server();
-    }
-
-    public app: express.Application;
-
     private Config() : void {
-        this.app.use(bodyParser.json());
-        this.app.use(bodyParser.urlencoded({ extended: true }));
-        this.app.use(express.static(path.join(__dirname, "public")));
+        this.App.use(express.static(this.AppPublicPath));
     }
 
     private Routes() : void {
-        let router: express.Router = express.Router();
+        let router: express.IRouter = express.Router();
         
-        var indexController : IndexController = new IndexController();
-        var personApi : PersonApi = new PersonApi();
+        router.get("/*", this.index);
+        router.get("/api/v1/person", this.api);
 
-        router.get("/", indexController.index.bind(indexController.index));
-        router.get("/api/v1/person", personApi.index);
+        this.App.use(router);
+    }
 
-        this.app.use(router);
+    private api(req: express.Request, res: express.Response, next: express.NextFunction) {
+        let response= {
+            name: "Marvio"
+         };
+
+        res.send(response);
+    }
+
+    private index(req: express.Request, res: express.Response, next: express.NextFunction) {    
+         res.sendFile(path.join(this.AppPublicPath, "index.html"));
     }
 }
-
-var server = Server.bootstrap();
-export default server.app;

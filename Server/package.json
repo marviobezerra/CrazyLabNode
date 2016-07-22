@@ -1,16 +1,15 @@
 {
-  "name": "server",
-  "version": "1.0.0",
+  "author": "",
   "description": "",
-  "main": "index.js",
-  "scripts": {
-    "start": "node ./bin/www"
-  },
-  "keywords": [],
-  "author": "Márvio André B. Silverio",
   "license": "ISC",
-  "devDependencies": {    
-  },
+  "main": "index.js",
+  "name": "mypetlife",
+  "version": "1.0.0",
   "dependencies": {
+  },
+  "devDependencies": {
+  },
+  "scripts": {
+    "postinstall": "typings install"
   }
 }
