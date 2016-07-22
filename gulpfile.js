@@ -4,7 +4,8 @@ var gulp = require("gulp"),
     fs = require("fs"),
 	DeepMerge = require("deep-merge"),
     nodemon = require("nodemon"),
-    WebpackDevServer = require("webpack-dev-server");
+    WebpackDevServer = require("webpack-dev-server"),
+    ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 var deepmerge = DeepMerge(function(target, source, key) {
   if(target instanceof Array) {
@@ -40,6 +41,55 @@ function config(overrides) {
     return deepmerge(defaultConfig, overrides || {});
 }
 
+var frontendConfig = config({
+	entry: [
+        "webpack-dev-server/client?http://localhost:3000",
+        "webpack/hot/only-dev-server",
+		"./Client/App/Main.ts"
+	],
+	output: {
+        path: path.join(__dirname, "build", "client"),        
+		filename: "index.js",
+        publicPath: 'http://localhost:3000/build'
+	},
+	plugins: [
+		new ExtractTextPlugin("index.css"),
+        new webpack.HotModuleReplacementPlugin({ quiet: true })
+	],
+	resolve: {
+		extensions: ["", ".js", ".ts", ".scss", ".css"]
+	},
+
+	module: {
+		loaders: [
+			{
+				test: /\.css$/,
+				exclude: /node_modules/,
+				loader: ExtractTextPlugin.extract("style-loader", "css-loader")
+			},
+            {
+                test: /\App.Theme.scss$/,
+                exclude: /node_modules/,
+                loader: ExtractTextPlugin.extract("style-loader", "css-loader!sass-loader")
+            },
+			{
+			    exclude: /Styles/,
+			    test: /\.scss$/,
+			    loaders: ["raw-loader", "sass-loader?sourceMap"]
+			},
+			{
+				test: /\.ts$/,
+				loader: "ts-loader"
+			},
+			{
+				test: /\.js$/,
+				loader: "strip-sourcemap"
+			}
+		],
+		noParse: [/angular2\/bundles\/.+/]
+	}
+});
+
 // Server
 var nodeModules = fs
     .readdirSync("node_modules")
@@ -57,8 +107,8 @@ var backendConfig = config({
     ],
     target: "node",
     output: {
-        path: path.join(__dirname, "build"),
-        filename: "backend.js"
+        path: path.join(__dirname, "build", "server"),
+        filename: "index.js"
     },
     node: {
         __dirname: true,
@@ -137,7 +187,7 @@ gulp.task("run", ["backend-watch", "frontend-watch"], function() {
         execMap: {
             js: "node"
         },
-        script: path.join(__dirname, "build/backend"),
+        script: path.join(__dirname, "build/server/index"),
         ignore: ["*"],
         watch: ["foo/"],
         ext: "noop"
