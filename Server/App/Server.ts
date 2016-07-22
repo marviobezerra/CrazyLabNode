@@ -3,7 +3,6 @@ import * as path from "path";
 
 export class Server {
     public App : express.Application;
-    public AppPublicPath: string = "./.bin/public/";
 
     constructor(){
         this.App = express();
@@ -12,16 +11,18 @@ export class Server {
     }
 
     private Config() : void {
-        this.App.use(express.static(this.AppPublicPath));
+        this.App.use(express.static("./.bin/public/"));
     }
 
     private Routes() : void {
         let router: express.IRouter = express.Router();
         
-        router.get("/*", this.index);
+        router.get("/", this.index);
         router.get("/api/v1/person", this.api);
+        router.get("/api/v1/company", this.apiTeste);
 
         this.App.use(router);
+        this.App.use(this.index);
     }
 
     private api(req: express.Request, res: express.Response, next: express.NextFunction) {
@@ -32,7 +33,15 @@ export class Server {
         res.send(response);
     }
 
+    private apiTeste(req: express.Request, res: express.Response, next: express.NextFunction) {
+        let response= {
+            name: "Marvio"
+         };
+
+        res.send(response);
+    }
+
     private index(req: express.Request, res: express.Response, next: express.NextFunction) {    
-         res.sendFile(path.join(this.AppPublicPath, "index.html"));
+         res.sendFile(path.join("./.bin/public/", "index.html"));
     }
 }

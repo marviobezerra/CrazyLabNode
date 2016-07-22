@@ -1,8 +1,6 @@
 var	path = require("path"),
 	fs = require("fs"),
-	nodemon = require("nodemon"),
-	webpack = require("webpack"),
-	WebpackDevServer = require("webpack-dev-server");
+	webpack = require("webpack");
 
 var nodeModules = fs.readdirSync("node_modules")
 	.filter(function(x) {
