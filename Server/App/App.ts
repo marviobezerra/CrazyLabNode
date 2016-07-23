@@ -1,22 +1,22 @@
 import * as express from "express";
 import * as path from "path";
 
-export class Server {
-    public App : express.Application;
+export class App {
+    public App: express.Application;
 
-    constructor(){
+    constructor() {
         this.App = express();
         this.Config();
         this.Routes();
     }
 
-    private Config() : void {
-        this.App.use(express.static("./.bin/public/"));
+    private Config(): void {
+        this.App.use(express.static(process.env.NODE_PATH + "/public"));
     }
 
-    private Routes() : void {
+    private Routes(): void {
         let router: express.IRouter = express.Router();
-        
+
         router.get("/", this.index);
         router.get("/api/v1/person", this.api);
         router.get("/api/v1/company", this.apiTeste);
@@ -26,22 +26,22 @@ export class Server {
     }
 
     private api(req: express.Request, res: express.Response, next: express.NextFunction) {
-        let response= {
+        let response = {
             name: "Marvio ... EU!!!! Mesmo neh!!!"
-         };
+        };
 
         res.send(response);
     }
 
     private apiTeste(req: express.Request, res: express.Response, next: express.NextFunction) {
-        let response= {
+        let response = {
             name: "Marvio"
-         };
+        };
 
         res.send(response);
     }
 
-    private index(req: express.Request, res: express.Response, next: express.NextFunction) {    
-         res.sendFile(path.join("./.bin/public/", "index.html"));
+    private index(req: express.Request, res: express.Response, next: express.NextFunction) {
+         res.sendFile(path.resolve(process.env.NODE_PATH + '/public/index.html'));
     }
 }

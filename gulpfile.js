@@ -3,9 +3,10 @@ var gulp = require("gulp"),
   path = require("path"),
   nodemon = require("nodemon"),
   htmlmin = require("gulp-htmlmin"),
-  merge = require('webpack-merge'),
+  merge = require("webpack-merge"),
   livereload = require("gulp-livereload"),
   webpack = require("webpack"),
+  rimraf = require("gulp-rimraf"),
   webpackStream = require("webpack-stream");
 
 var helper = {
@@ -33,7 +34,7 @@ var helper = {
   webpack: {
     client: require("./Client/webpack.config.js"),
     server: require("./Server/webpack.config.js"),
-    config: function (config, dev, watch, deploy) {
+    config: function (config, dev, watch, deploy, server) {
       var result = merge(config, {
         watch: watch,
         devtool: dev ? "source-map" : ""
@@ -49,6 +50,21 @@ var helper = {
         result.plugins.push(new webpack.optimize.UglifyJsPlugin({
           minimize: true
         }));
+
+
+        if (server === true) {
+          delete config.output.devtoolModuleFilenameTemplate;
+          delete config.output.devtoolFallbackModuleFilenameTemplate;
+          delete config.recordsPath;
+
+          config.output.path = path.join(__dirname, ".deploy");
+
+          console.log("recordsPath: " + config.recordsPath);
+        }
+
+        if (server === false) {
+          config.output.path = path.join(__dirname, ".deploy", "public", "assets");
+        }
       }
 
       return result;
@@ -80,7 +96,10 @@ var helper = {
   },
   tasks: {
     run: "run",
-    clear: "clear",
+    clean: {
+      bin: "clean",
+      deploy: "clean:deploy"
+    },
     watch: {
       client: "watch:client",
       server: "watch:server",
@@ -90,16 +109,37 @@ var helper = {
       copy: "build:client:copy",
       client: "build:client",
       server: "build:server",
+      deploy: "build:deploy"
     }
   },
 };
 
+gulp.task(helper.tasks.clean.bin, function (done) {
+  return gulp.src(path.join("./.bin"), { read: false })
+    .pipe(rimraf());
+});
+
+gulp.task(helper.tasks.clean.deploy, function (done) {
+  return gulp.src(path.join("./.deploy"), { read: false })
+    .pipe(rimraf());
+});
+
 gulp.task(helper.tasks.build.server, function (done) {
-  webpack(helper.webpack.server).run(helper.onBuild(done));
+  webpack(helper.webpack.config(helper.webpack.server, true, true, false)).run(helper.onBuild(done));
 });
 
 gulp.task(helper.tasks.build.client, function (done) {
-  webpack(helper.webpack.client).run(helper.onBuild(done));
+  webpack(helper.webpack.config(helper.webpack.client, true, true, false)).run(helper.onBuild(done));
+});
+
+gulp.task(helper.tasks.build.deploy, [helper.tasks.clean.deploy], function (done) {
+
+  gulp.src([helper.path.source.html])
+    .pipe(htmlmin(helper.htmlMimify))
+    .pipe(gulp.dest("./.deploy/public"));
+
+  webpack(helper.webpack.config(helper.webpack.client, false, false, true, false)).run(helper.onBuild());
+  webpack(helper.webpack.config(helper.webpack.server, false, false, true, true)).run(helper.onBuild());
 });
 
 gulp.task(helper.tasks.build.copy, function () {
@@ -117,7 +157,7 @@ gulp.task(helper.tasks.watch.client, [helper.tasks.build.copy], function (done) 
     .pipe(webpackStream(helper.webpack.config(helper.webpack.client, true, true, false)))
     .pipe(gulp.dest(helper.path.destination.js))
     .pipe(livereload());
-  
+
   done();
 
 });
@@ -145,7 +185,10 @@ gulp.task(helper.tasks.run, [helper.tasks.watch.server, helper.tasks.watch.clien
     script: path.join(__dirname, ".bin"),
     ignore: ["*"],
     watch: ["foo/"],
-    nodeArgs: ['--debug'],
+    nodeArgs: ["--debug"],
+    env: {
+      NODE_PATH: "./.bin"
+    },
     ext: "noop"
   }).on("restart", function () {
     console.log("Patched!");

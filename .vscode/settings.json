@@ -8,6 +8,7 @@
         "/**/config.bat": true,
         "/**/clean.bat": true,        
         ".bin": true,
+        ".deploy": true,
         "/**/node_modules": true,
         "/**/typings": true
     }
