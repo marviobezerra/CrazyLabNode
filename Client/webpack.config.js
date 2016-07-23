@@ -29,7 +29,7 @@ module.exports = {
 				loader: ExtractTextPlugin.extract("style-loader", "css-loader")
 			},
 			{
-			    exclude: /Styles/,
+			    exclude: /node_modules/,
 			    test: /\.scss$/,
 			    loaders: ['raw-loader', 'sass-loader?sourceMap']
 			},
