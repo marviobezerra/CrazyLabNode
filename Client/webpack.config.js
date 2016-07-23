@@ -28,11 +28,6 @@ module.exports = {
 				exclude: /node_modules/,
 				loader: ExtractTextPlugin.extract("style-loader", "css-loader")
 			},
-            {
-                test: /\App.Theme.scss$/,
-                exclude: /node_modules/,
-                loader: ExtractTextPlugin.extract("style-loader", "css-loader!sass-loader")
-            },
 			{
 			    exclude: /Styles/,
 			    test: /\.scss$/,
