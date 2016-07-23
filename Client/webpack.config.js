@@ -7,7 +7,7 @@ module.exports = {
 		path.join(__dirname, "App", "Polyfills.ts"),
 		path.join(__dirname, "App", "Vendor.ts"),
 		path.join(__dirname, "App", "Main.ts"),
-		path.join(__dirname, "App", "Styles", "App.Theme.scss")
+		path.join(__dirname, "App", "Styles", "app.theme.scss")
 	],
 	output: {
 		path: path.join(__dirname, "..", ".bin", "public", "assets"),
