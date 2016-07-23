@@ -12,6 +12,7 @@ export class App {
 
     private Config(): void {
         this.App.use(express.static(process.env.NODE_PATH + "/public"));
+        this.App.use("/public", express.static(process.env.NODE_PATH + "/public"));
     }
 
     private Routes(): void {
