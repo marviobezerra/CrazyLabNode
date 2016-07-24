@@ -1,35 +1,40 @@
 import * as express from "express";
 import * as path from "path";
+import { UnCapitalize } from "./Common";
 
-import { PeopleRoute } from "./Routes";
+import { PeopleRoute, IRoute } from "./Routes";
 
 export class App {
 
     public App: express.Application;
+    public Routes: IRoute[] = [];
 
     constructor() {
         this.App = express();
-        this.Config();
-        this.Routes();
+        this.ConfigApp();
+        this.ConfigRoutes();
     }
 
-    private Config(): void {
+    private ConfigApp(): void {
+        //this.App.use(UnCapitalize);
         this.App.use(express.static(process.env.NODE_PATH + "/public"));
     }
 
-    private Routes(): void {
+    private ConfigRoutes(): void {
         let router: express.IRouter = express.Router();
-        router.get("/", this.index);
-        
-        var apiAdress = "/api/v1/";
+        let apiAdress = "/api/v1/";
 
-        var peopleRoute = new PeopleRoute(router, apiAdress);
+        router.get("/", this.index);
+
+        this.Routes.push(new PeopleRoute());
+
+        this.Routes.forEach(route => route.SetUp(router, apiAdress));
 
         this.App.use(router);
         this.App.use(this.index);
     }
 
-    private index(req: express.Request, res: express.Response, next: express.NextFunction) : void {
+    private index(req: express.Request, res: express.Response, next: express.NextFunction): void {
         res.sendFile(path.resolve(process.env.NODE_PATH + '/public/index.html'));
     }
 }

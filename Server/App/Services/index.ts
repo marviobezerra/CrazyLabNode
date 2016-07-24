@@ -1,2 +1,2 @@
 export * from "./PeopleService";
-export { KernelConfig, Types } from "./Kernel.Config"
+export { KernelConfig, Types } from "./Kernel.Config";

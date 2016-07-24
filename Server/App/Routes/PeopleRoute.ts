@@ -1,33 +1,33 @@
-import * as express from "express";
-import * as url from "url";
+import { IRouter, Request, Response } from "express";
 
+import { IRoute } from "./";
 import { PeopleService, KernelConfig, Types } from "../Services";
 import { IPerson } from "../../../Entity";
 
-export class PeopleRoute {
+export class PeopleRoute implements IRoute {
 
-	constructor(router: express.IRouter, baseAddress: string) {
-		var address = url.resolve(baseAddress, "people/");
-		
-		router.get(url.resolve(address, ""), this.Index);
-        router.get(url.resolve(address, "company"), this.Company);
-	}
-
-	private Index(req: express.Request, res: express.Response, next: express.NextFunction) : void {
-
-        var service = KernelConfig.get<PeopleService>(Types.PeopleService);
-
-        service.GetPeople(50)
-            .map((value: IPerson[], index: number) => value)
-            .subscribe((result: IPerson[]) => res.send(result));
+    constructor() {
+        this.peopleService = KernelConfig.get<PeopleService>(Types.PeopleService);
     }
 
-	private Company(req: express.Request, res: express.Response, next: express.NextFunction) : void {
+    private peopleService: PeopleService
 
-        var service = KernelConfig.get<PeopleService>(Types.PeopleService);
+    private Index(req: Request, res: Response): void {
 
-        service.GetPerson()
+        this.peopleService.GetPeople(req.query.count || 50)
+            .map((value: IPerson[], index: number) => value)
+            .subscribe((result: IPerson[]) => res.json(result));
+    }
+
+    private Company(req: Request, res: Response): void {
+
+        this.peopleService.GetPerson()
             .map((value: IPerson, index: number) => value)
-            .subscribe((result: IPerson) => res.send(result));
+            .subscribe((result: IPerson) => res.json(result));
+    }
+
+    public SetUp(router: IRouter, baseAddress: string): void {
+        router.get(baseAddress + "people/", (req: Request, res: Response) => this.Index(req, res));
+        router.get(baseAddress + "people/company", (req: Request, res: Response) => this.Company(req, res));
     }
 }

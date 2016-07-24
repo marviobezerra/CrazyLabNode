@@ -1,4 +1,4 @@
-import { injectable, inject, Kernel  } from "inversify";
+import { Kernel  } from "inversify";
 import "reflect-metadata";
 
 import { PeopleService } from "./";
