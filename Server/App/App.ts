@@ -1,5 +1,6 @@
 import * as express from "express";
 import * as path from "path";
+import { IPerson, PeopleService } from "./Services"
 
 export class App {
     public App: express.Application;
@@ -26,22 +27,24 @@ export class App {
     }
 
     private api(req: express.Request, res: express.Response, next: express.NextFunction) {
-        let response = {
-            name: "Marvio ... EU!!!! Mesmo neh!!!"
-        };
 
-        res.send(response);
+        var service: PeopleService = new PeopleService();
+
+        service.GetPeople(50)
+            .map((value: IPerson[], index: number) => value)
+            .subscribe((result: IPerson[]) => res.send(result));
     }
 
     private apiTeste(req: express.Request, res: express.Response, next: express.NextFunction) {
-        let response = {
-            name: "Marvio"
-        };
 
-        res.send(response);
+        var service: PeopleService = new PeopleService();
+
+        service.GetPerson()
+            .map((value: IPerson, index: number) => value)
+            .subscribe((person: IPerson) => res.send(person));
     }
 
     private index(req: express.Request, res: express.Response, next: express.NextFunction) {
-         res.sendFile(path.resolve(process.env.NODE_PATH + '/public/index.html'));
+        res.sendFile(path.resolve(process.env.NODE_PATH + '/public/index.html'));
     }
 }
