@@ -1,12 +1,12 @@
 import { Observable, Observer } from "rxjs";
+import { injectable  } from "inversify";
+import "reflect-metadata";
 
-export interface IPerson {
-    IdPerson: string;
-    Name: string;
-    Email: string;
-}
+import { IPerson } from "../../../Entity";
 
+@injectable()
 export class PeopleService {
+
 	public GetPerson(): Observable<IPerson> {
 
 		return Observable.create((observer: Observer<IPerson>) => {
