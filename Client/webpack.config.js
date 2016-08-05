@@ -10,7 +10,7 @@ module.exports = {
 		path.join(__dirname, "App", "Styles", "app.theme.scss")
 	],
 	output: {
-		path: path.join(__dirname, "..", ".bin", "public", "assets"),
+		path: path.join(__dirname, "..", "bin", "public", "assets"),
 		filename: "bundle.js"
 	},
 	plugins: [

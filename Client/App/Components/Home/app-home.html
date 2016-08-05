@@ -2,8 +2,10 @@
   {{ Title }}
 </h1>
 
+<person-detail [Person]="Selected"></person-detail>
+
 <ul>
   <li *ngFor="let person of People">
-    <p>{{person.Name}}</p>
+    <a (click)="Selected=person">{{person.Name}}</a>
   </li>
 </ul>

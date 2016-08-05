@@ -15,7 +15,7 @@ module.exports = {
 	],
 	target: "node",
 	output: {
-		path: path.join(__dirname, "..", ".bin"),
+		path: path.join(__dirname, "..", "bin"),
 		filename: "index.js",
 		devtoolModuleFilenameTemplate: '[absolute-resource-path]',
 		devtoolFallbackModuleFilenameTemplate: '[absolute-resource-path]?[hash]'
@@ -36,7 +36,7 @@ module.exports = {
 			callback();
 		}
 	],
-	recordsPath: path.join(__dirname, "..", ".bin", "records"),
+	recordsPath: path.join(__dirname, "..", "bin", "records"),
 	resolve: {
 		extensions: ["", ".js", ".ts"]
 	},

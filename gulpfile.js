@@ -57,13 +57,13 @@ var helper = {
           delete config.output.devtoolFallbackModuleFilenameTemplate;
           delete config.recordsPath;
 
-          config.output.path = path.join(__dirname, ".deploy");
+          config.output.path = path.join(__dirname, "deploy");
 
           console.log("recordsPath: " + config.recordsPath);
         }
 
         if (server === false) {
-          config.output.path = path.join(__dirname, ".deploy", "public", "assets");
+          config.output.path = path.join(__dirname, "deploy", "public", "assets");
         }
       }
 
@@ -90,8 +90,8 @@ var helper = {
       html: "./Client/App/**/*.html"
     },
     destination: {
-      html: "./.bin/public",
-      js: "./.bin/public/assets"
+      html: "./bin/public",
+      js: "./bin/public/assets"
     }
   },
   tasks: {
@@ -115,12 +115,12 @@ var helper = {
 };
 
 gulp.task(helper.tasks.clean.bin, function (done) {
-  return gulp.src(path.join("./.bin"), { read: false })
+  return gulp.src(path.join("./bin"), { read: false })
     .pipe(rimraf());
 });
 
 gulp.task(helper.tasks.clean.deploy, function (done) {
-  return gulp.src(path.join("./.deploy"), { read: false })
+  return gulp.src(path.join("/deploy"), { read: false })
     .pipe(rimraf());
 });
 
@@ -136,7 +136,7 @@ gulp.task(helper.tasks.build.deploy, [helper.tasks.clean.deploy], function (done
 
   gulp.src([helper.path.source.html])
     .pipe(htmlmin(helper.htmlMimify))
-    .pipe(gulp.dest("./.deploy/public"));
+    .pipe(gulp.dest("./deploy/public"));
 
   webpack(helper.webpack.config(helper.webpack.client, false, false, true, false)).run(helper.onBuild());
   webpack(helper.webpack.config(helper.webpack.server, false, false, true, true)).run(helper.onBuild());
@@ -182,12 +182,12 @@ gulp.task(helper.tasks.run, [helper.tasks.watch.server, helper.tasks.watch.clien
     execMap: {
       js: "node"
     },
-    script: path.join(__dirname, ".bin"),
+    script: path.join(__dirname, "bin"),
     ignore: ["*"],
     watch: ["foo/"],
     nodeArgs: ["--debug"],
     env: {
-      NODE_PATH: "./.bin"
+      NODE_PATH: "./bin"
     },
     ext: "noop"
   }).on("restart", function () {
