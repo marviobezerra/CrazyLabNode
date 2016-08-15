@@ -1,13 +1,13 @@
 import { IRouter, Request, Response } from "express";
 
 import { IRoute } from "./";
-import { PeopleService, KernelConfig, Types } from "../Services";
+import { PeopleService, } from "../Services";
 import { IPerson } from "../../../Entity";
 
 export class PeopleRoute implements IRoute {
 
     constructor() {
-        this.peopleService = KernelConfig.get<PeopleService>(Types.PeopleService);
+        this.peopleService = new PeopleService();
     }
 
     private peopleService: PeopleService

@@ -1,9 +1,17 @@
-import { bootstrap } from "@angular/platform-browser-dynamic";
+import { platformBrowserDynamic } from "@angular/platform-browser-dynamic";
+import { enableProdMode } from "@angular/core";
 
-import { AppServices } from "./Services/app-services.providers";
-import { AppComponent } from "./Components/Home/";
+import { AppPrivateModule } from "./app-private.module";
+import { AppPublicModule } from "./app-public.module";
 
-bootstrap(AppComponent,
-    AppServices)
-    .catch((reason: any) => console.error(reason));
+declare var x: any;
 
+if (x.p === 1) {
+    enableProdMode();
+}
+
+if (x.a === 1) {
+    platformBrowserDynamic().bootstrapModule(AppPrivateModule);
+} else {
+    platformBrowserDynamic().bootstrapModule(AppPublicModule);
+}

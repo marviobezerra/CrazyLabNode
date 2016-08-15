@@ -1,10 +1,8 @@
 import { Observable, Observer } from "rxjs";
-import { injectable  } from "inversify";
 import "reflect-metadata";
 
 import { IPerson } from "../../../Entity";
 
-@injectable()
 export class PeopleService {
 
 	public GetPerson(): Observable<IPerson> {
