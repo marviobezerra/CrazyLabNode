@@ -1,0 +1,11 @@
+/// <reference path="../../styles/App.Variables.scss" />
+
+.layout-private {
+    .fill-space {
+        flex: 1 1 auto;
+    }
+
+    .app-sidenav {
+        width: 260px;
+    }
+}

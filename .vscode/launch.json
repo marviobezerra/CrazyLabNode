@@ -5,8 +5,8 @@
             "name": "Launch",
             "type": "node",
             "request": "launch",
-            "program": "${workspaceRoot}/.bin/index.js",
-            "outDir": "${workspaceRoot}/.bin/",
+            "program": "${workspaceRoot}/bin/index.js",
+            "outDir": "${workspaceRoot}/bin/",
             "stopOnEntry": false,
             "args": [],
             "cwd": "${workspaceRoot}",
@@ -30,10 +30,10 @@
             "address": "localhost",
             "restart": false,
             "sourceMaps": true,
-            "outDir": "${workspaceRoot}/.bin/",
+            "outDir": "${workspaceRoot}/bin/",
             "smartStep": true,
             "stopOnEntry": true,            
-            "localRoot": "${workspaceRoot}/.bin/",
+            "localRoot": "${workspaceRoot}/bin/",
             "remoteRoot": null
         }
     ]

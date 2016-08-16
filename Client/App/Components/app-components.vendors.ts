@@ -1,4 +1,4 @@
-import { NgModule } from "@angular/core";
+﻿import { NgModule } from "@angular/core";
 import { MdButtonToggleModule } from "@angular2-material/button-toggle";
 import { MdButtonModule } from "@angular2-material/button";
 import { MdCheckboxModule } from "@angular2-material/checkbox";

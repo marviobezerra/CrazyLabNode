@@ -1,4 +1,4 @@
-import "@angular/platform-browser";
+﻿import "@angular/platform-browser";
 import "@angular/platform-browser-dynamic";
 import "@angular/core";
 import "@angular/common";
@@ -18,3 +18,4 @@ import "@angular2-material/progress-circle";
 import "@angular2-material/toolbar";
 import "@angular2-material/icon";
 import "@angular2-material/tabs";
+

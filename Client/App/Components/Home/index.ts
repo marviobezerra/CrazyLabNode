@@ -1,1 +1,1 @@
-export * from "./app-home.component";
+﻿export * from "./home.component";

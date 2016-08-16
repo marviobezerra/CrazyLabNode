@@ -4,10 +4,12 @@ var path = require('path'),
 
 module.exports = {
 	entry: [
-		path.join(__dirname, "App", "Polyfills.ts"),
-		path.join(__dirname, "App", "Vendor.ts"),
-		path.join(__dirname, "App", "Main.ts"),
-		path.join(__dirname, "App", "Styles", "app.theme.scss")
+		path.join(__dirname, "App", "polyfills.ts"),
+		path.join(__dirname, "App", "vendors.ts"),
+		path.join(__dirname, "App", "main.ts"),
+		path.join(__dirname, "App", "Styles", "app.theme.scss"),
+		"./node_modules/@angular2-material/core/style/core.css",
+        "./node_modules/@angular2-material/core/overlay/overlay.css"
 	],
 	output: {
 		path: path.join(__dirname, "..", "bin", "public", "assets"),
@@ -25,12 +27,10 @@ module.exports = {
 		loaders: [
 			{
 				test: /\.css$/,
-				exclude: /node_modules/,
 				loader: ExtractTextPlugin.extract("style-loader", "css-loader")
 			},
 			{
                 test: /\app.theme.scss$/,
-                exclude: /node_modules/,
                 loader: ExtractTextPlugin.extract("style-loader", "css-loader!sass-loader")
             },
 			{
