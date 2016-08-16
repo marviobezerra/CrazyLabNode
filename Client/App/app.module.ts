@@ -7,6 +7,8 @@ import { RouterModule } from "@angular/router";
 import { AppComponents, AppRoutes } from "./Components";
 import { LayoutComponent } from "./Components/Layout";
 
+import { PeopleService } from "./Services";
+
 import { MaterialModule } from "./Components";
 
 @NgModule({
@@ -19,6 +21,7 @@ import { MaterialModule } from "./Components";
     ],
     providers: [
         AppRoutes,
+        PeopleService
     ],
     declarations: AppComponents,
     bootstrap: [LayoutComponent]
