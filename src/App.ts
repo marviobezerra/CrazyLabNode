@@ -1,6 +1,6 @@
 import * as express from "express";
-import { BaseApi } from "./Server/Api/BaseApi";
 import { PeopleApi } from "./Server/Api/People.Api";
+import { BaseApi } from "./Server/Api/BaseApi";
 
 export class Application {
 
@@ -17,9 +17,7 @@ export class Application {
     let apiRouter = express.Router();
     appRouter.get("/", this.Index);
 
-    this.APIS.push(new PeopleApi());
-
-    this.APIS.forEach(api => api.Setup(1, apiRouter));
+    this.APIS.push(new PeopleApi(1, apiRouter));
 
     this.AppExpress.use(appRouter);
     this.AppExpress.use("/api", apiRouter);

@@ -8,8 +8,8 @@ export class PeopleApi extends BaseApi {
     private Service: PeopleService;
     private Name = "people";
 
-    constructor() {
-        super();
+    constructor(version: number, router: Router) {
+        super(version, router);
         this.Service = new PeopleService();
     }
 

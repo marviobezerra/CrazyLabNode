@@ -2,6 +2,10 @@ import { Router } from "express";
 
 export abstract class BaseApi {
 
+    constructor(version: number, router: Router) {
+        this.Setup(version, router);
+    }
+
     protected GetName(version: number, routeAddress: string, routeName?: string): string {
         let result = `/v${version}/${routeAddress}`
 
